@@ -36,9 +36,9 @@ class Tile {
     for(int i=0; i<tiles.length; i++) {
       float distance=dist(pos.x, pos.y, tiles[i].pos.x, tiles[i].pos.y);
       if(owner==tiles[i].owner&&distance<60&&i!=index) {
-        PVector dir=pos.sub(tiles[i].pos);
+        PVector dir=new PVector(pos.x-tiles[i].pos.x, pos.y-tiles[i].pos.y);
         dir.normalize();
-        dir=dir.mult(2*(70-distance));
+        dir=dir.mult(70-distance);
         println(dir);
         pos=new PVector(pos.x+dir.x, pos.y+dir.y);
         tiles[i].pos=new PVector(tiles[i].pos.x-dir.x, tiles[i].pos.y-dir.y);
