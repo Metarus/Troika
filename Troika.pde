@@ -2,12 +2,13 @@ PVector[] boardLoc=new PVector[6];
 PGraphics[] board=new PGraphics[6]; //each player has their own board associated with them and board 0 is the middle
 Tile[] tiles=new Tile[49];
 int playerId=1;
+int playerCount=1;
 boolean holding=false; //whether or not a the player is holding a tile
 
 void setup() {
   size(3000, 1800);
   for(int i=0; i<board.length; i++) {
-    board[i]=createGraphics(800, 600);
+    board[i]=createGraphics(700, 500);
   }
   int counter=0;
   for(int i=1; i<=15; i++) {
@@ -20,10 +21,14 @@ void setup() {
     tiles[i].checkCollisions();
   }
   boardLoc[0]=new PVector(width/2-board[0].width/2, height/2-board[0].height/2-200);
+  boardLoc[1]=new PVector(width/2-board[0].width/2, height/2-board[0].height/2+500);
 }
 void draw() {
   for(int i=0; i<tiles.length; i++) {
     tiles[i].update();
+  }
+  for(int i=0; i<tiles.length; i++) {
+    tiles[i].checkBounds();
   }
   for(int i=0; i<board.length; i++) {
     board[i].beginDraw();
@@ -35,7 +40,9 @@ void draw() {
   for(int i=0; i<tiles.length; i++) {
     tiles[i].display();
   }
-  image(board[0], boardLoc[0].x, boardLoc[0].y);
+  for(int i=0; i<=playerCount; i++) {
+    image(board[i], boardLoc[i].x, boardLoc[i].y);
+  }
 }
 void mouseReleased() {
   holding=false;
