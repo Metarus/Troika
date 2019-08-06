@@ -49,8 +49,8 @@ void draw() {
 void serverUpdate() {
   String input="";
   c=s.available();
-  if (c != null) {
-    input = c.readString(); 
+  if (c!=null) {
+    input=c.readString(); 
   }
   if(input.equals("NEW")) {
     playerCount++;
@@ -60,7 +60,25 @@ void serverUpdate() {
 }
 
 void clientUpdate() {
-  
+  newClientCheck();
+}
+
+void newClientCheck() { //checks if the server has sent a new client; if already connected this will just add a player
+  String input, data[];
+  if (c.available()>0) { 
+    input = c.readString(); 
+    data=(split(input, '|'));
+    if(data[0].equals("ID")&&data.length>1) {
+      if(playerId==-2) {
+        playerId=Integer.parseInt(data[1]);
+        screenState=1;
+        gameC=new Client(this, Msg, 12339+playerId); //separate ports for each client, 12339+playerId will give a port between 12341 and 12345 and 12340 is the main server
+      }
+      playerCount=Integer.parseInt(data[1]);
+      updateBoardPositions();
+      println("updated");
+    }
+  }
 }
 
 void drawGame() {
@@ -108,18 +126,7 @@ void infoScreen() {
   }
   //if playerId=-2, then we are checking for the message to be received and to connect to the server
   if(playerId==-2) {
-    String input, data[];
-    if (c.available() > 0) { 
-      input = c.readString(); 
-      data=(split(input, '|'));
-      if(data[0].equals("ID")&&data.length>1) {
-        playerId=Integer.parseInt(data[1]);
-        playerCount=playerId;
-        gameC=new Client(this, Msg, 12339+playerId); //separate ports for each client, 12339+playerId will give a port between 12341 and 12345 and 12340 is the main server
-        screenState=1;
-        updateBoardPositions();
-      }
-    }
+    newClientCheck();
   }
 }
 
