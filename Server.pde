@@ -14,11 +14,11 @@ void serverUpdate() {
     updateBoardPositions();
     s.write("ID|"+playerCount);
   }
-  checkTileUpdates();
-  receiveUpdates();
+  s_checkTileUpdates();
+  s_receiveUpdates();
 }
 
-void receiveUpdates() {
+void s_receiveUpdates() {
   String input, data[];
   for(int i=0; i<playerCount-1; i++) {
     gameC=gameS[i].available();
@@ -26,27 +26,31 @@ void receiveUpdates() {
       input=gameC.readString(); 
       data=split(input, '|');
       for(int j=0; j<data.length; j++) {
-        if(data[i].equals("UPDATE")) sendAllTileUpdates();
+        if(data[i].equals("UPDATE")) {
+          s_sendAllTileUpdates();
+        } else {
+          updateTile(data[i]);
+        }
       }
     }
   }
 }
 
-void sendAllTileUpdates() {
+void s_sendAllTileUpdates() {
   for(int i=0; i<tiles.length; i++) {
-    sendTileUpdates(i);
+    s_sendTileUpdates(i);
   }
 }
 
-void checkTileUpdates() {
+void s_checkTileUpdates() {
   for(int i=0; i<tiles.length; i++) {
     if(tiles[i].moved) {
-      sendTileUpdates(i);
+      s_sendTileUpdates(i);
     }
   }
 }
 
-void sendTileUpdates(int ind) {
+void s_sendTileUpdates(int ind) {
   for(int i=0; i<playerCount-1; i++) {
     gameS[i].write(ind+" "+tiles[ind].owner+" "+tiles[ind].pos.x+" "+tiles[ind].pos.y+" "+(tiles[ind].flipped?"1":"0")+"|");
   }

@@ -22,9 +22,11 @@ class Tile {
       moved=true;
     }
     if(mousePressed&&mouseButton==RIGHT&&cursorOnTile()) {
+      moved=true;
       owner=playerId;
     }
     if(cursorOnTile()&&key=='a'&&keyPressed) {
+      moved=true;
       flipped=true;
     }
     checkCollisions();

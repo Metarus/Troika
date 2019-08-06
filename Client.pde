@@ -11,16 +11,11 @@ void clientUpdate() {
         playerCount++;
         updateBoardPositions();
       } else {
-        String data2[]; //for parsing the coordinates down
-        data2=split(data[i], ' ');
-        if(data2.length==5) {
-          tiles[Integer.parseInt(data2[0])].owner=Integer.parseInt(data2[1]);
-          tiles[Integer.parseInt(data2[0])].pos=new PVector(Float.parseFloat(data2[2]), Float.parseFloat(data2[3]));
-          tiles[Integer.parseInt(data2[0])].flipped=Integer.parseInt(data2[4])==1;
-        }
+        updateTile(data[i]);
       }
     }
   }
+  c_checkTileUpdates();
 }
 
 void newClientCheck() { //checks if the server has sent a new client; if already connected this will just add a player
@@ -39,4 +34,16 @@ void newClientCheck() { //checks if the server has sent a new client; if already
       updateBoardPositions();
     }
   }
+}
+
+void c_checkTileUpdates() {
+  for(int i=0; i<tiles.length; i++) {
+    if(tiles[i].moved) {
+      c_sendTileUpdates(i);
+    }
+  }
+}
+
+void c_sendTileUpdates(int ind) {
+  gameC.write(ind+" "+tiles[ind].owner+" "+tiles[ind].pos.x+" "+tiles[ind].pos.y+" "+(tiles[ind].flipped?"1":"0")+"|");
 }

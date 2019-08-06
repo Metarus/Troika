@@ -59,3 +59,13 @@ void updateBoardPositions() {
     count++;
   }
 }
+
+void updateTile(String data) {
+  String data2[];
+  data2=split(data, ' ');
+  if(data2.length==5) {
+    tiles[Integer.parseInt(data2[0])].owner=Integer.parseInt(data2[1]);
+    tiles[Integer.parseInt(data2[0])].pos=new PVector(Float.parseFloat(data2[2]), Float.parseFloat(data2[3]));
+    tiles[Integer.parseInt(data2[0])].flipped=Integer.parseInt(data2[4])==1;
+  }
+}
