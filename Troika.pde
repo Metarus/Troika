@@ -4,7 +4,7 @@ import processing.net.*;
 Server s, gameS[]=new Server[4];
 Client c, gameC;
 
-PVector[] boardLoc=new PVector[6];
+PVector[] boardLoc=new PVector[6], boardSize=new PVector[6];
 PGraphics[] board=new PGraphics[6]; //each player has their own board associated with them and board 0 is the middle
 Tile[] tiles=new Tile[49];
 int playerId=0; //id of the player, 1 is the host. 0 is not an id because 0 is the central board and value before set
@@ -14,7 +14,7 @@ String Msg=""; //used for entering in the IP
 boolean holding=false; //whether or not a the player is holding a tile
 
 void setup() {
-  size(3000, 1800);
+  size(3000, 1800, P2D);
   for(int i=0; i<board.length; i++) {
     board[i]=createGraphics(700, 500);
   }
@@ -28,8 +28,8 @@ void setup() {
   for(int i=0; i<tiles.length; i++) {
     tiles[i].checkCollisions();
   }
-  boardLoc[0]=new PVector(width/2-board[0].width/2, height/2-board[0].height/2-200);
-  boardLoc[1]=new PVector(width/2-board[0].width/2, height/2-board[0].height/2+500);
+  boardLoc[0]=new PVector(width/2-board[0].width/2, height/2-board[0].height/2-100);
+  boardSize[0]=new PVector(700, 500);
 }
 
 void draw() {
@@ -55,6 +55,7 @@ void serverUpdate() {
   if(input.equals("NEW")) {
     playerCount++;
     c.write("ID|"+playerCount);
+    updateBoardPositions();
   }
 }
 
@@ -75,8 +76,8 @@ void drawGame() {
     tiles[i].display();
   }
   boardTextDraw();
-  for(int i=0; i<=1; i++) {
-    image(board[i], boardLoc[i].x, boardLoc[i].y);
+  for(int i=0; i<=playerCount; i++) {
+    image(board[i], boardLoc[i].x, boardLoc[i].y, boardSize[i].x, boardSize[i].y);
   }
 }
 
@@ -94,6 +95,7 @@ void infoScreen() {
       }
       playerId=1;
       screenState++;
+      updateBoardPositions();
     }
     if(keyPressed&&key=='c') {
       playerId=-1;
@@ -112,8 +114,10 @@ void infoScreen() {
       data=(split(input, '|'));
       if(data[0].equals("ID")&&data.length>1) {
         playerId=Integer.parseInt(data[1]);
+        playerCount=playerId;
         gameC=new Client(this, Msg, 12339+playerId); //separate ports for each client, 12339+playerId will give a port between 12341 and 12345 and 12340 is the main server
         screenState=1;
+        updateBoardPositions();
       }
     }
   }
@@ -140,9 +144,17 @@ void boardTextDraw() {
   }
 }
 
-void updatePlayerId(int newId) {
-  playerId=newId;
+void updateBoardPositions() {
   boardLoc[playerId]=new PVector(width/2-board[0].width/2, height/2-board[0].height/2+500);
+  boardSize[playerId]=new PVector(700, 500);
+  int count=0;
+  for(int i=playerId+1; i<playerCount+playerId; i++) {
+    int board=i;
+    if(board>playerCount) board-=playerCount;
+    boardLoc[board]=new PVector(width/2-(280+300*(playerCount-2)-600*count), 100);
+    boardSize[board]=new PVector(560, 400);
+    count++;
+  }
 }
 
 void mouseReleased() {

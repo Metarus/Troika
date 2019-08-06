@@ -20,7 +20,7 @@ class Tile {
       pos.y=mouseY-boardLoc[owner].y;
     }
     if(mousePressed&&mouseButton==RIGHT&&cursorOnTile()) {
-      owner=(owner+1)%2;
+      owner=playerId;
     }
     if(cursorOnTile()&&key=='a'&&keyPressed) {
       flipped=true;
