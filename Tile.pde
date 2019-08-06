@@ -1,9 +1,9 @@
 class Tile {
   boolean moved;
   boolean held;
-  PVector pos;
-  boolean flipped=false; //whether or not the value is visible
-  int owner=0; //who owns the tile, 0 means in the middle
+  PVector pos, prevPos=new PVector(0, 0);
+  boolean flipped=false, prevFlipped=flipped; //whether or not the value is visible
+  int owner=0, prevOwner=owner; //who owns the tile, 0 means in the middle
   int value; //actual value of the tile
   int index;
   Tile(int number, int _index) {
@@ -19,17 +19,20 @@ class Tile {
     if(held) {
       pos.x=mouseX-boardLoc[owner].x;
       pos.y=mouseY-boardLoc[owner].y;
-      moved=true;
     }
     if(mousePressed&&mouseButton==RIGHT&&cursorOnTile()) {
-      moved=true;
       owner=playerId;
     }
     if(cursorOnTile()&&key=='a'&&keyPressed) {
-      moved=true;
       flipped=true;
     }
     checkCollisions();
+  }
+  void checkMoved() {
+    if(pos.x!=prevPos.x||pos.y!=prevPos.y||flipped!=prevFlipped||owner!=prevOwner) moved=true;
+    prevPos=pos;
+    prevFlipped=flipped;
+    prevOwner=owner;
   }
   void display() {
     board[owner].beginDraw();
@@ -46,8 +49,6 @@ class Tile {
     for(int i=0; i<tiles.length; i++) {
       float distance=dist(pos.x, pos.y, tiles[i].pos.x, tiles[i].pos.y);
       if(owner==tiles[i].owner&&distance<60&&i!=index) {
-        moved=true;
-        tiles[i].moved=true;
         PVector dir=new PVector(pos.x-tiles[i].pos.x, pos.y-tiles[i].pos.y);
         dir.normalize();
         dir=dir.mult(70-distance);

@@ -7,7 +7,7 @@ void clientUpdate() {
     println(input);
     data=split(input, '|'); //to parse into sets of coordinates and for any instructions
     for(int i=0; i<data.length; i++) {
-      if(input.equals("NEW")) {
+      if(data[i].equals("NEW")) {
         playerCount++;
         updateBoardPositions();
       } else {

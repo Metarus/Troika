@@ -20,8 +20,8 @@ void tileUpdate() {
   for(int i=0; i<tiles.length; i++) {
     tiles[i].checkBounds();
   }
-  
   for(int i=0; i<tiles.length; i++) {
+    tiles[i].checkMoved();
     tiles[i].display();
   }
 }
