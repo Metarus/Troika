@@ -1,4 +1,5 @@
 class Tile {
+  boolean moved;
   boolean held;
   PVector pos;
   boolean flipped=false; //whether or not the value is visible
@@ -18,6 +19,7 @@ class Tile {
     if(held) {
       pos.x=mouseX-boardLoc[owner].x;
       pos.y=mouseY-boardLoc[owner].y;
+      moved=true;
     }
     if(mousePressed&&mouseButton==RIGHT&&cursorOnTile()) {
       owner=playerId;
@@ -42,6 +44,8 @@ class Tile {
     for(int i=0; i<tiles.length; i++) {
       float distance=dist(pos.x, pos.y, tiles[i].pos.x, tiles[i].pos.y);
       if(owner==tiles[i].owner&&distance<60&&i!=index) {
+        moved=true;
+        tiles[i].moved=true;
         PVector dir=new PVector(pos.x-tiles[i].pos.x, pos.y-tiles[i].pos.y);
         dir.normalize();
         dir=dir.mult(70-distance);

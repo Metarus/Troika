@@ -38,78 +38,11 @@ void draw() {
       infoScreen();
       break;
     case 1: 
-      drawGame();
+      gameUpdate();
       if(playerId==1) {
         serverUpdate();
       } else clientUpdate();
       break;
-  }
-}
-
-void serverUpdate() {
-  String input="";
-  c=s.available();
-  if (c!=null) {
-    input=c.readString(); 
-  }
-  if(input.equals("NEW")) {
-    for(int i=0; i<playerCount-1; i++) { //sending data to other clients
-      gameS[i].write("NEW");
-      println("Sent NEW to "+i);
-    }
-    playerCount++;
-    s.write("ID|"+playerCount);
-    updateBoardPositions();
-  }
-}
-
-void clientUpdate() {
-  String input, data[];
-  if(gameC.available()>0) {
-    input=gameC.readString()+"";
-    println(input);
-    data=split(input, '|');
-    for(int i=0; i<data.length; i++) {
-      if(input.equals("NEW")) {
-        playerCount++;
-        updateBoardPositions();
-      }
-    }
-  }
-}
-
-void newClientCheck() { //checks if the server has sent a new client; if already connected this will just add a player
-  String input, data[];
-  if(c.available()>0) { 
-    input=c.readString(); 
-    data=split(input, '|');
-    if(data[0].equals("ID")&&data.length>1) {
-      if(playerId==-2) {
-        playerId=Integer.parseInt(data[1]);
-        screenState=1;
-        gameC=new Client(this, Msg, 12339+playerId); //separate ports for each client, 12339+playerId will give a port between 12341 and 12345 and 12340 is the main server
-      }
-      playerCount=Integer.parseInt(data[1]);
-      updateBoardPositions();
-    }
-  }
-}
-
-void drawGame() {
-  background(180);
-  for(int i=0; i<tiles.length; i++) {
-    tiles[i].update();
-  }
-  for(int i=0; i<tiles.length; i++) {
-    tiles[i].checkBounds();
-  }
-  boardDraw();
-  for(int i=0; i<tiles.length; i++) {
-    tiles[i].display();
-  }
-  boardTextDraw();
-  for(int i=0; i<=playerCount; i++) {
-    image(board[i], boardLoc[i].x, boardLoc[i].y, boardSize[i].x, boardSize[i].y);
   }
 }
 
@@ -141,40 +74,6 @@ void infoScreen() {
   //if playerId=-2, then we are checking for the message to be received and to connect to the server
   if(playerId==-2) {
     newClientCheck();
-  }
-}
-
-void boardDraw() {
-  for(int i=0; i<board.length; i++) {
-    board[i].beginDraw();
-    board[i].strokeWeight(5);
-    board[i].fill(255);
-    board[i].rect(0, 0, board[i].width-1, board[i].height-1);
-    board[i].endDraw();
-  }
-}
-
-void boardTextDraw() {
-  for(int i=0; i<board.length; i++) {
-    board[i].beginDraw();
-    board[i].textSize(30);
-    board[i].fill(0);
-    board[i].textAlign(CENTER);
-    board[i].text(i==0?"Center":"Player "+i, board[i].width/2, 30);
-    board[i].endDraw();
-  }
-}
-
-void updateBoardPositions() {
-  boardLoc[playerId]=new PVector(width/2-board[0].width/2, height/2-board[0].height/2+500);
-  boardSize[playerId]=new PVector(700, 500);
-  int count=0;
-  for(int i=playerId+1; i<playerCount+playerId; i++) {
-    int board=i;
-    if(board>playerCount) board-=playerCount;
-    boardLoc[board]=new PVector(width/2-(280+300*(playerCount-2)-600*count), 100);
-    boardSize[board]=new PVector(560, 400);
-    count++;
   }
 }
 
