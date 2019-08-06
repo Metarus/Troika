@@ -53,21 +53,36 @@ void serverUpdate() {
     input=c.readString(); 
   }
   if(input.equals("NEW")) {
+    for(int i=0; i<playerCount-1; i++) { //sending data to other clients
+      gameS[i].write("NEW");
+      println("Sent NEW to "+i);
+    }
     playerCount++;
-    c.write("ID|"+playerCount);
+    s.write("ID|"+playerCount);
     updateBoardPositions();
   }
 }
 
 void clientUpdate() {
-  newClientCheck();
+  String input, data[];
+  if(gameC.available()>0) {
+    input=gameC.readString()+"";
+    println(input);
+    data=split(input, '|');
+    for(int i=0; i<data.length; i++) {
+      if(input.equals("NEW")) {
+        playerCount++;
+        updateBoardPositions();
+      }
+    }
+  }
 }
 
 void newClientCheck() { //checks if the server has sent a new client; if already connected this will just add a player
   String input, data[];
-  if (c.available()>0) { 
-    input = c.readString(); 
-    data=(split(input, '|'));
+  if(c.available()>0) { 
+    input=c.readString(); 
+    data=split(input, '|');
     if(data[0].equals("ID")&&data.length>1) {
       if(playerId==-2) {
         playerId=Integer.parseInt(data[1]);
@@ -76,7 +91,6 @@ void newClientCheck() { //checks if the server has sent a new client; if already
       }
       playerCount=Integer.parseInt(data[1]);
       updateBoardPositions();
-      println("updated");
     }
   }
 }
