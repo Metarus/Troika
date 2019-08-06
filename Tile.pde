@@ -29,7 +29,7 @@ class Tile {
     checkCollisions();
   }
   void checkMoved() {
-    if(pos.x!=prevPos.x||pos.y!=prevPos.y||flipped!=prevFlipped||owner!=prevOwner) moved=true;
+    if(pos!=prevPos||flipped!=prevFlipped||owner!=prevOwner||held) moved=true;
     prevPos=pos;
     prevFlipped=flipped;
     prevOwner=owner;
@@ -38,6 +38,7 @@ class Tile {
     board[owner].beginDraw();
     board[owner].strokeWeight(1);
     board[owner].fill(100, 180, 255);
+    if(moved) board[owner].fill(255, 0, 0);
     board[owner].ellipse(pos.x, pos.y, 60, 60);
     board[owner].fill(0);
     board[owner].textAlign(CENTER);
