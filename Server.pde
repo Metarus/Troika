@@ -1,5 +1,6 @@
 //Any functions for the server to use
 
+int tick=0;
 void serverUpdate() {
   String input="";
   c=s.available();
@@ -16,6 +17,8 @@ void serverUpdate() {
   }
   s_checkTileUpdates();
   s_receiveUpdates();
+  tick++;
+  if(tick%120==0) s_sendAllTileUpdates();
 }
 
 void s_receiveUpdates() {
